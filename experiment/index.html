@@ -375,7 +375,8 @@ var oshimai = {
     show_clickable_nav: false,
     on_load: function() {
         jsPsych.data.addProperties(par_info);
-        jsPsych.data.displayData('csv');
+        //jsPsych.data.displayData('csv');
+        jsPsychSheet.uploadData(jsPsych.data.get().csv());
       }
   };
 
