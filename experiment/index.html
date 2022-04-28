@@ -342,9 +342,8 @@ var joy_hyoka = {
   on_finish: function () { Counter += 1 },
 }
 
-
 var Hyouka = {
-  timeline: [sad_hyoka],
+  timeline: jsPsych.randomization.sampleWithoutReplacement([sad_hyoka, anger_hyoka, joy_hyoka], 1),
 };
 
 var oshimai = {
