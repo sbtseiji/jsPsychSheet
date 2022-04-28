@@ -2,41 +2,60 @@
 <html>
   <head>
     <title>My experiment</title>
+    <head>
+      <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    </head>
     <meta charset="UTF-8" />
     <script src="jsPsych-6.3.1/jspsych.js"></script>
     <script src="jsPsych-6.3.1/plugins/jspsych-instructions.js"></script>
     <script src="jsPsych-6.3.1/plugins/jspsych-survey-multi-choice.js"></script>
     <script src="jsPsych-6.3.1/plugins/jspsych-survey-html-form.js"></script>    
-    <script src="jsPsych-6.3.1/plugins/jspsych-survey-text.js"></script>    
+    <script src="jsPsych-6.3.1/plugins/jspsych-survey-text.js"></script>
+    <script src="jsPsych-6.3.1/plugins/jspsych-survey-likert.js"></script>
 
-    <script src="jspsych-affect-grid/jspsych-affect-grid.js"></script>
+    <script src="affectGrid.js"></script>
 
     <link href="jsPsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css" />
+    <link href="style.css" rel="stylesheet" type="text/css" />
+
+    
   </head>
   <body></body>
   <script>
 
   var timeline = [];    
+  var scale = ["0<br/>まったく感じない","1","2","3","4<br/>強く感じる"];
+  var sad_01 = [
+    {message: '<img src="imgs/sad_01++.png", style="width:100%;max-width:1240px;">'},
+    {message: '<img src="imgs/sad_02+-.png", style="width:100%;max-width:1240px;">'},
+    {message: '<img src="imgs/sad_03-+.png", style="width:100%;max-width:1240px;">'},
+    {message: '<img src="imgs/sad_04--.png", style="width:100%;max-width:1240px;">'},
+  ];
+  var sad_02 = [
+    {message: '<img src="imgs/sad_02++.png", style="width:100%;max-width:1240px;">'},
+    {message: '<img src="imgs/sad_03+-.png", style="width:100%;max-width:1240px;">'},
+    {message: '<img src="imgs/sad_04-+.png", style="width:100%;max-width:1240px;">'},
+    {message: '<img src="imgs/sad_01--.png", style="width:100%;max-width:1240px;">'},
+  ];
+  var sad_03 = [
+    {message: '<img src="imgs/sad_03++.png", style="width:100%;max-width:1240px;">'},
+    {message: '<img src="imgs/sad_04+-.png", style="width:100%;max-width:1240px;">'},
+    {message: '<img src="imgs/sad_01-+.png", style="width:100%;max-width:1240px;">'},
+    {message: '<img src="imgs/sad_02--.png", style="width:100%;max-width:1240px;">'},
+  ];
+  var sad_04 = [
+    {message: '<img src="imgs/sad_04++.png", style="width:100%;max-width:1240px;">'},
+    {message: '<img src="imgs/sad_01+-.png", style="width:100%;max-width:1240px;">'},
+    {message: '<img src="imgs/sad_02-+.png", style="width:100%;max-width:1240px;">'},
+    {message: '<img src="imgs/sad_03--.png", style="width:100%;max-width:1240px;">'},
+  ];
 
-  var affect_grid={
-    type: 'affect-grid',
-    custom_label: true,
-    grid_square_size: 25,
-    label_name: {
-      arousal: "覚醒",
-      sleepiness: "睡眠",
-      pleasant: "快",
-      unpleasant: "不快",
-      stress: "緊張",
-      excitement: "興奮",
-      depression: "落ち込み",
-      relaxation: "リラックス"
-    }
-	};
+  var sad_emoji = [sad_01, sad_02, sad_03, sad_04];
+
 
   var nenrei = {
     type: 'survey-html-form',
-    preamble: '<p>あなたの年齢をお答えください。</p>',
+    preamble: '<div class="inst_text"><span>あなたの年齢をお答えください。</span></div>',
     html: '<input type="number" required>',
     button_label:'次へ',
   };
@@ -45,7 +64,7 @@
     type: 'survey-multi-choice',
     questions: [
       {
-        prompt: '<p>あなたの性別をお答えください。</p>',
+        prompt: '<div class="inst_text"><span>あなたの性別をお答えください。</span></div>',
         name: 'FriendCloseness',
         options:['男','女','その他','答えたくない'],
         required: true
@@ -57,7 +76,7 @@
   var hajimeni = {
     type: 'instructions',
     pages: [
-      'この調査は〜（ここに調査趣旨の説明）。',
+      `<div class="inst_text"><span>この調査は〜（ここに調査趣旨の説明）。</span></div>`,
     ],
     allow_backward: false,
     button_label_next:'次へ',
@@ -69,7 +88,7 @@
     type: 'survey-multi-choice',
     questions: [
       {
-        prompt: '<p>普段，メッセージ（LINEなど）でよくやり取りする相手を一人，思い浮かべてください。<br />その相手とあなたはどの程度親しいですか？</p>',
+        prompt: '<div class="inst_text"><span>普段，メッセージ（LINEなど）でよくやり取りする相手を一人，思い浮かべてください。<br /><br />その相手とあなたはどの程度親しいですか？</span></div>',
         name: 'FriendCloseness',
         options:['とても親しい','少し親しい','どちらともいえない','あまり親しくない','まったく親しくない'],
         required: true
@@ -82,7 +101,7 @@
     type: 'survey-multi-choice',
     questions: [
       {
-        prompt: '<p>その相手は，あなたとの普段のやりとりでどの程度「絵文字」や「顔文字」を使用しますか？</p>',
+        prompt: '<div class="inst_text"><span>その<font color="blue"><b>相手</b></font>は，あなたとの普段のやりとりでどの程度「絵文字」や「顔文字」を使用しますか？</span></div>',
         name: 'EmojiAite',
         options:['いつも使う', 'よく使う','ときどき使う','まれに使う','まったく使わない'],
         required: true
@@ -95,7 +114,7 @@
     type: 'survey-multi-choice',
     questions: [
       {
-        prompt: '<p>では，「あなた」はその相手とのやりとりで，普段どの程度「絵文字」や「顔文字」を使用しますか？</p>',
+        prompt: '<div class="inst_text"><span>では，<font color="red"><b>あなた自身</b></font>は，その相手とのやりとりで普段どの程度「絵文字」や「顔文字」を使用しますか？</span></div>',
         name: 'EmojiJibun',
         options:['いつも使う', 'よく使う','ときどき使う','まれに使う','まったく使わない'],
         required: true
@@ -107,7 +126,7 @@
   var AGsetsumei = {
     type: 'instructions',
     pages: [
-      'これから〜（ここにアフェクト・グリッドの説明）。',
+      `<div class="inst_text"><span>これから〜（ここにアフェクト・グリッドの説明）。</span></div>`,
     ],
     allow_backward: false,
     button_label_next:'次へ',
@@ -117,7 +136,7 @@
   var KadaiSetsumei = {
     type: 'instructions',
     pages: [
-      'これからさまざまな状況でやりとりされるメッセージについての評価を〜それぞれの場面であなたが普段よくやり取りする相手からメッセージが送られてきた場面を〜（課題の説明）。',
+      `<div class="inst_text"><span>これからさまざまな状況でやりとりされるメッセージについての評価を〜それぞれの場面であなたが普段よくやり取りする相手からメッセージが送られてきた場面を〜（課題の説明）。</span></div>`,
     ],
     allow_backward: false,
     button_label_next:'次へ',
@@ -125,275 +144,62 @@
   };
 
 
-<!-- 絵文字 + 記号 -->
-  var affect_grid2={
-    type: 'affect-grid',
-    custom_label: true,
-    grid_square_size: 25,
-    label_name: {
-      arousal: "活動的な（覚醒）",
-      sleepiness: "非活動的な（眠気）",
-      pleasant: "快い",
-      unpleasant: "不快な",
-      stress: "緊張（ストレス）",
-      excitement: "興奮（ワクワク）",
-      depression: "落ち込み",
-      relaxation: "リラックス"
+// main
+var emoji_hyoka = {
+  timeline: [
+    {
+      type: 'survey-html-form',
+      preamble: function(){
+        var html = `<div class="inst_text"><span><b>実験課題</b><br/><br/>あなたが送ったプレゼントへのお礼として，次のメッセージが送られてきた場面を想定してください。<br /><br />このとき，あなたが感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br/><div>${jsPsych.timelineVariable('message')}</div><br/>`;
+        return html;
+      },
+      html: affect_grid1,
     },
-    rated_stimulus: "<p>あなたが送ったプレゼントへのお礼として</p><img class='balloon' src='imgs/Joy++.png'><p><br/>このようなメッセージが送られてきたとき，あなたが感じるであろう感情を，アフェクト・グリッドで示してください。</p>"
-	};
-  
-  var kanjo1 = {
-    type: 'survey-html-form',
-    preamble: 
-      "<p>あなたが送ったプレゼントへのお礼のメッセージ</p><img class='balloon' src='imgs/Joy++.png'><p><br/>"+
-        "このメッセージが送られてきたとき，あなたは次のそれぞれの感情をどの程度感じると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</p>",
-    html: "<p>嬉しい　　　<input type='radio' id='pos1' name='ure' value='1' required>0　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>1　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>2　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>3　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>4</p>"+
-        "<p>気分が良い　<input type='radio' id='pos2' name='kibu' value='1' required>0　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>1　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>2　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>3　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>4</p>"+
-        "<p>満足な　　　<input type='radio' id='pos3' name='man' value='1' required>0　"+
-        "<input type='radio' id='pos3' name='man' value='1'>1　"+
-        "<input type='radio' id='pos3' name='man' value='1'>2　"+
-        "<input type='radio' id='pos3' name='man' value='1'>3　"+
-        "<input type='radio' id='pos3' name='man' value='1'>4</p>",
-    button_label:'次へ',
-  };
-
-var kanjo1 = {
-    type: 'survey-html-form',
-    preamble: 
-      "<p>あなたが送ったプレゼントへのお礼のメッセージ</p><img class='balloon' src='imgs/Joy++.png'><p><br/>"+
-        "このメッセージの送り手は，次のそれぞれの感情をどの程度感じていると思いますか。「0：まったく感じていない」から「4：強く感じている」までの数字のうち，もっとも近いものを1つずつ選んでください。</p>",
-    html: "<p>嬉しい　　　<input type='radio' id='pos1' name='ure' value='1' required>0　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>1　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>2　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>3　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>4</p>"+
-        "<p>気分が良い　<input type='radio' id='pos2' name='kibu' value='1' required>0　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>1　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>2　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>3　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>4</p>"+
-        "<p>満足な　　　<input type='radio' id='pos3' name='man' value='1' required>0　"+
-        "<input type='radio' id='pos3' name='man' value='1'>1　"+
-        "<input type='radio' id='pos3' name='man' value='1'>2　"+
-        "<input type='radio' id='pos3' name='man' value='1'>3　"+
-        "<input type='radio' id='pos3' name='man' value='1'>4</p>",
-    button_label:'次へ',
-  };
-
-
-<!-- 喜び　絵文字のみ -->
- var affect_grid2={
-    type: 'affect-grid',
-    custom_label: true,
-    grid_square_size: 25,
-    label_name: {
-      arousal: "活動的な（覚醒）",
-      sleepiness: "非活動的な（眠気）",
-      pleasant: "快い",
-      unpleasant: "不快な",
-      stress: "緊張（ストレス）",
-      excitement: "興奮（ワクワク）",
-      depression: "落ち込み",
-      relaxation: "リラックス"
+    {
+      type: 'survey-likert',
+      preamble: function(){
+        var html = `<div class="inst_text"><span>（続き）<br/>このメッセージに対し，あなたは次のそれぞれの感情をどの程度感じると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/><div>${jsPsych.timelineVariable('message')}</div><br/>`;
+        return html;
+      },
+      questions: [
+        { prompt: "満足な", labels: scale, required: true},
+        { prompt: "悲しい", labels: scale, required: true},
+        { prompt: "腹が立つ", labels: scale, required: true},
+        { prompt: "嬉しい", labels: scale, required: true},
+        { prompt: "気分が良い", labels: scale, required: true},
+        { prompt: "不快な", labels: scale, required: true},
+      ]
     },
-    rated_stimulus: "<p>あなたが送ったプレゼントへのお礼のメッセージ</p><img class='balloon' src='imgs/Joy+-.png'><p><br/>このようなメッセージが送られてきたとき，あなたが感じるであろう感情を，アフェクト・グリッドで示してください。</p>"
-	};
-  
-  var kanjo1 = {
-    type: 'survey-html-form',
-    preamble: 
-      "<p>あなたが送ったプレゼントへのお礼のメッセージ</p><img class='balloon' src='imgs/Joy+-.png'><p><br/>"+
-        "このメッセージが送られてきたとき，あなたは次のそれぞれの感情をどの程度感じると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</p>",
-    html: "<p>嬉しい　　　<input type='radio' id='pos1' name='ure' value='1' required>0　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>1　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>2　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>3　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>4</p>"+
-        "<p>気分が良い　<input type='radio' id='pos2' name='kibu' value='1' required>0　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>1　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>2　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>3　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>4</p>"+
-        "<p>満足な　　　<input type='radio' id='pos3' name='man' value='1' required>0　"+
-        "<input type='radio' id='pos3' name='man' value='1'>1　"+
-        "<input type='radio' id='pos3' name='man' value='1'>2　"+
-        "<input type='radio' id='pos3' name='man' value='1'>3　"+
-        "<input type='radio' id='pos3' name='man' value='1'>4</p>",
-    button_label:'次へ',
-  };
-
-var kanjo1 = {
-    type: 'survey-html-form',
-    preamble: 
-      "<p>あなたが送ったプレゼントへのお礼のメッセージ</p><img class='balloon' src='imgs/Joy+-.png'><p><br/>"+
-        "このメッセージの送り手は，次のそれぞれの感情をどの程度感じていると思いますか。「0：まったく感じていない」から「4：強く感じている」までの数字のうち，もっとも近いものを1つずつ選んでください。</p>",
-    html: "<p>嬉しい　　　<input type='radio' id='pos1' name='ure' value='1' required>0　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>1　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>2　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>3　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>4</p>"+
-        "<p>気分が良い　<input type='radio' id='pos2' name='kibu' value='1' required>0　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>1　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>2　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>3　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>4</p>"+
-        "<p>満足な　　　<input type='radio' id='pos3' name='man' value='1' required>0　"+
-        "<input type='radio' id='pos3' name='man' value='1'>1　"+
-        "<input type='radio' id='pos3' name='man' value='1'>2　"+
-        "<input type='radio' id='pos3' name='man' value='1'>3　"+
-        "<input type='radio' id='pos3' name='man' value='1'>4</p>",
-    button_label:'次へ',
-  };
-
-
-
-<!-- 喜び＋記号のみ -->
-
- var affect_grid2={
-    type: 'affect-grid',
-    custom_label: true,
-    grid_square_size: 25,
-    label_name: {
-      arousal: "活動的な（覚醒）",
-      sleepiness: "非活動的な（眠気）",
-      pleasant: "快い",
-      unpleasant: "不快な",
-      stress: "緊張（ストレス）",
-      excitement: "興奮（ワクワク）",
-      depression: "落ち込み",
-      relaxation: "リラックス"
+    {
+      type: 'survey-likert',
+      preamble: function(){
+        var html = `<div class="inst_text"><span>（続き）<br/>このメッセージの送り主は，次のそれぞれの感情をどの程度感じていると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/><div>${jsPsych.timelineVariable('message')}</div><br/>`;
+        return html;
+      },
+      questions: [
+        { prompt: "満足な", labels: scale, required: true},
+        { prompt: "悲しい", labels: scale, required: true},
+        { prompt: "腹が立つ", labels: scale, required: true},
+        { prompt: "嬉しい", labels: scale, required: true},
+        { prompt: "気分が良い", labels: scale, required: true},
+        { prompt: "不快な", labels: scale, required: true},
+      ]
     },
-    rated_stimulus: "<p>あなたが送ったプレゼントへのお礼のメッセージ</p><img class='balloon' src='imgs/Joy-+.png'><p><br/>このようなメッセージが送られてきたとき，あなたが感じるであろう感情を，アフェクト・グリッドで示してください。</p>"
-	};
-  
-  var kanjo1 = {
-    type: 'survey-html-form',
-    preamble: 
-      "<p>あなたが送ったプレゼントへのお礼のメッセージ</p><img class='balloon' src='imgs/Joy-+.png'><p><br/>"+
-        "このメッセージが送られてきたとき，あなたは次のそれぞれの感情をどの程度感じると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</p>",
-    html: "<p>嬉しい　　　<input type='radio' id='pos1' name='ure' value='1' required>0　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>1　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>2　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>3　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>4</p>"+
-        "<p>気分が良い　<input type='radio' id='pos2' name='kibu' value='1' required>0　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>1　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>2　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>3　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>4</p>"+
-        "<p>満足な　　　<input type='radio' id='pos3' name='man' value='1' required>0　"+
-        "<input type='radio' id='pos3' name='man' value='1'>1　"+
-        "<input type='radio' id='pos3' name='man' value='1'>2　"+
-        "<input type='radio' id='pos3' name='man' value='1'>3　"+
-        "<input type='radio' id='pos3' name='man' value='1'>4</p>",
-    button_label:'次へ',
-  };
+  ],
+  button_label: '次へ',
+  timeline_variables: jsPsych.randomization.sampleWithReplacement(sad_emoji, 1)[0],
+  randomize_order: true
+}
 
-var kanjo1 = {
-    type: 'survey-html-form',
-    preamble: 
-      "<p>あなたが送ったプレゼントへのお礼のメッセージ</p><img class='balloon' src='imgs/Joy-+.png'><p><br/>"+
-        "このメッセージの送り手は，次のそれぞれの感情をどの程度感じていると思いますか。「0：まったく感じていない」から「4：強く感じている」までの数字のうち，もっとも近いものを1つずつ選んでください。</p>",
-    html: "<p>嬉しい　　　<input type='radio' id='pos1' name='ure' value='1' required>0　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>1　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>2　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>3　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>4</p>"+
-        "<p>気分が良い　<input type='radio' id='pos2' name='kibu' value='1' required>0　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>1　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>2　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>3　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>4</p>"+
-        "<p>満足な　　　<input type='radio' id='pos3' name='man' value='1' required>0　"+
-        "<input type='radio' id='pos3' name='man' value='1'>1　"+
-        "<input type='radio' id='pos3' name='man' value='1'>2　"+
-        "<input type='radio' id='pos3' name='man' value='1'>3　"+
-        "<input type='radio' id='pos3' name='man' value='1'>4</p>",
-    button_label:'次へ',
-  };
+var Hyouka = {
+  timeline: [emoji_hyoka],
+};
 
-
-
-<!-- 喜び（もじのみ）-->
-
- var affect_grid2={
-    type: 'affect-grid',
-    custom_label: true,
-    grid_square_size: 25,
-    label_name: {
-      arousal: "活動的な（覚醒）",
-      sleepiness: "非活動的な（眠気）",
-      pleasant: "快い",
-      unpleasant: "不快な",
-      stress: "緊張（ストレス）",
-      excitement: "興奮（ワクワク）",
-      depression: "落ち込み",
-      relaxation: "リラックス"
-    },
-    rated_stimulus: "<p>あなたが送ったプレゼントへのお礼のメッセージ</p><img class='balloon' src='imgs/Joy--.png'><p><br/>このようなメッセージが送られてきたとき，あなたが感じるであろう感情を，アフェクト・グリッドで示してください。</p>"
-	};
-  
-  var kanjo1 = {
-    type: 'survey-html-form',
-    preamble: 
-      "<p>あなたが送ったプレゼントへのお礼のメッセージ</p><img class='balloon' src='imgs/Joy--.png'><p><br/>"+
-        "このメッセージが送られてきたとき，あなたは次のそれぞれの感情をどの程度感じると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</p>",
-    html: "<p>嬉しい　　　<input type='radio' id='pos1' name='ure' value='1' required>0　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>1　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>2　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>3　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>4</p>"+
-        "<p>気分が良い　<input type='radio' id='pos2' name='kibu' value='1' required>0　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>1　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>2　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>3　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>4</p>"+
-        "<p>満足な　　　<input type='radio' id='pos3' name='man' value='1' required>0　"+
-        "<input type='radio' id='pos3' name='man' value='1'>1　"+
-        "<input type='radio' id='pos3' name='man' value='1'>2　"+
-        "<input type='radio' id='pos3' name='man' value='1'>3　"+
-        "<input type='radio' id='pos3' name='man' value='1'>4</p>",
-    button_label:'次へ',
-  };
-
-var kanjo1 = {
-    type: 'survey-html-form',
-    preamble: 
-      "<p>あなたが送ったプレゼントへのお礼のメッセージ</p><img class='balloon' src='imgs/Joy--.png'><p><br/>"+
-        "このメッセージの送り手は，次のそれぞれの感情をどの程度感じていると思いますか。「0：まったく感じていない」から「4：強く感じている」までの数字のうち，もっとも近いものを1つずつ選んでください。</p>",
-    html: "<p>嬉しい　　　<input type='radio' id='pos1' name='ure' value='1' required>0　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>1　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>2　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>3　"+
-        "<input type='radio' id='pos1' name='ure' value='1'>4</p>"+
-        "<p>気分が良い　<input type='radio' id='pos2' name='kibu' value='1' required>0　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>1　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>2　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>3　"+
-        "<input type='radio' id='pos2' name='kibu' value='1'>4</p>"+
-        "<p>満足な　　　<input type='radio' id='pos3' name='man' value='1' required>0　"+
-        "<input type='radio' id='pos3' name='man' value='1'>1　"+
-        "<input type='radio' id='pos3' name='man' value='1'>2　"+
-        "<input type='radio' id='pos3' name='man' value='1'>3　"+
-        "<input type='radio' id='pos3' name='man' value='1'>4</p>",
-    button_label:'次へ',
-  };
-
-
-
+timeline.push(nenrei, seibetsu, hajimeni, shitashisa, emoji1, emoji2, AGsetsumei, KadaiSetsumei, Hyouka)
 
 
 jsPsych.init({
-    timeline: [hajimeni,nenrei,seibetsu,shitashisa,emoji1,emoji2,AGsetsumei,KadaiSetsumei,affect_grid2,kanjo1],
+    timeline: timeline
   });
   </script>
 </html>

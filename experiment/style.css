@@ -1,0 +1,56 @@
+
+
+body {
+  font-size: clamp(1rem, 10vw, 2rem);
+  max-width: 1290px;
+}
+
+
+.ag-inline__input {
+    clip: rect(1px, 1px, 1px, 1px);
+    position: absolute !important;
+}
+
+.ag-inline__input:checked + .ag-inline__label {
+    background: #000;
+}
+
+.ag-inline__label {
+  display: inline-block;
+  border-style:solid;
+  border-width: 1px;
+  padding: 0px;
+  width:20px;
+  height:20px;
+  margin-right: .05rem;
+  transition: all .2s;
+}
+
+.ag_table {
+  border-collapse:collapse;
+  line-height: 20px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.ag_cell {
+  padding: 0px;
+  margin: -20px;
+}
+
+.ag_label {
+  font-size:small;
+}
+
+.inst_text {
+  display: table-cell;
+  overflow: hidden;
+  line-height: 1.5em;
+  text-align: center;
+}
+
+.inst_text span {
+  display: inline-block;
+  vertical-align: top;
+  text-align: left;
+}
