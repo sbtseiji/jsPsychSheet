@@ -54,3 +54,8 @@ body {
   vertical-align: top;
   text-align: left;
 }
+
+.emoji_stim {
+  width:100%;
+  max-width:1240px;
+}
