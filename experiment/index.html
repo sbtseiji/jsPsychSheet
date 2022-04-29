@@ -6,28 +6,53 @@
       <meta name="viewport" content="width=device-width,initial-scale=1.0">
     </head>
     <meta charset="UTF-8" />
+    <script src="jquery-3.6.0.min.js"></script>
     <script src="jsPsych-6.3.1/jspsych.js"></script>
     <script src="jsPsych-6.3.1/plugins/jspsych-instructions.js"></script>
     <script src="jsPsych-6.3.1/plugins/jspsych-survey-multi-choice.js"></script>
     <script src="jsPsych-6.3.1/plugins/jspsych-survey-html-form.js"></script>    
     <script src="jsPsych-6.3.1/plugins/jspsych-survey-text.js"></script>
     <script src="jsPsych-6.3.1/plugins/jspsych-survey-likert.js"></script>
+    <script src="jsPsych-6.3.1/plugins/jspsych-call-function.js"></script>
 
     <script src="affectGrid.js"></script>
 
     <link href="jsPsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css" />
     <link href="style.css" rel="stylesheet" type="text/css" />
-
   </head>
   <body></body>
   <script>
 
-  var par_info = {
-    parID: jsPsych.randomization.randomID(12),
+  function indexOfSmallest(a) {
+    return a.indexOf(Math.min.apply(Math, a));
   }
 
-  var timeline = [];    
+  var subject_id = jsPsych.randomization.randomID(12);
+  var par_info = {
+    parID: subject_id,
+  }
+
+  var cond_ids = [0,0,0,0,0,0,0,0,0,0,0,0];
+  count_cond();
+
+  var min_id = indexOfSmallest(cond_ids);
+
+  var emopat = [1,2,3,1,2,3,1,2,3,1,2,3];
+  var mpat   = [1,1,1,2,2,2,3,3,3,4,4,4];
+
+  const emotion_id = emopat[min_id];
+  const message_id = mpat[min_id]; 
+
+  var timeline = [];
+  var face_data={};
+  var valence = 0;
+  var arousal = 0;
+  var item_data_self = {};
+  var item_data_other = {};
+  
   var scale = ["0<br/>まったく感じない","1","2","3","4<br/>強く感じる"];
+  var scale2 = ["0<br/>まったく感じていない","1","2","3","4<br/>強く感じている"];
+
   var sad_01 = [
     {message: 'sad_01++'},
     {message: 'sad_02+-'},
@@ -110,23 +135,34 @@
 
 
   var nenrei = {
-    type: 'survey-html-form',
-    preamble: '<div class="inst_text"><span>あなたの年齢をお答えください。</span></div>',
-    html: '<input type="number" required>',
+    type: 'survey-text',
+    questions: [
+      {prompt: '<div class="inst_text"><span>あなたの年齢をお答えください。</span></div>',
+      required: true,},
+    ],
     button_label:'次へ',
+    on_finish: function(){
+      var nenrei = jsPsych.data.get().last().values()[0].response.Q0
+      face_data['age']=nenrei;
+    }
   };
+
 
   var seibetsu = {
     type: 'survey-multi-choice',
     questions: [
       {
         prompt: '<div class="inst_text"><span>あなたの性別をお答えください。</span></div>',
-        name: 'FriendCloseness',
+        name: 'Sex',
         options:['男','女','その他','答えたくない'],
         required: true
       }
     ],
     button_label:'次へ',
+    on_finish: function(){
+      var seibetsu = jsPsych.data.get().last().values()[0].response.Sex;
+      face_data['sex']=seibetsu;
+    }
   };
 
   var hajimeni = {
@@ -151,6 +187,10 @@
       }
     ],
     button_label:'次へ',
+    on_finish: function(){
+      var shitashisa = jsPsych.data.get().last().values()[0].response.FriendCloseness;
+      face_data['closeness']=shitashisa;
+    }    
   };
 
   var emoji1 = {
@@ -164,6 +204,10 @@
       }
     ],
     button_label:'次へ',
+    on_finish: function(){
+      var hindo = jsPsych.data.get().last().values()[0].response.EmojiAite;
+      face_data['emoji_aite']=hindo;
+    }   
   };
 
   var emoji2 = {
@@ -177,7 +221,15 @@
       }
     ],
     button_label:'次へ',
+    on_finish: function(){
+      var hindo = jsPsych.data.get().last().values()[0].response.EmojiJibun;
+      face_data['emoji_jibun']=hindo;
+      } 
   };
+
+  var face_item = {
+    timeline: [nenrei, seibetsu, shitashisa, emoji1, emoji2], 
+  }
 
   var AGsetsumei = {
     type: 'instructions',
@@ -199,7 +251,6 @@
     show_clickable_nav: true,
   };
 
-
 // main
 var Counter=0;
 
@@ -208,16 +259,23 @@ var sad_hyoka = {
     {
       type: 'survey-html-form',
       preamble: function(){
-        var html = `<div class="inst_text"><span><b>場面${Math.floor(Counter/3)+1}</b><br/><br/>〜として，次のメッセージが送られてきた場面を想定してください。<br /><br />このとき，<font color="red"><b>あなた</b></font>が感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br/><div>'<img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>`;
+        var html = `<div class="inst_text"><span><b>場面${Counter+1}</b><br/><br/>〜として，次のメッセージが送られてきた場面を想定してください。<br /><br/><div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>このとき，<font color="red"><b>あなた</b></font>が感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br />`;
         return html;
       },
       html: affect_grid1,
       data: {imgID: jsPsych.timelineVariable('message')},
+      on_finish: function(){
+        var ag_res = jsPsych.data.get().last().values()[0].response;
+        ag_res = ag_res['ag1'];
+        ag_res = ag_res.split(',');
+        valence = ag_res[0]; 
+        arousal = ag_res[1];
+      }
     },
     {
       type: 'survey-likert',
       preamble: function(){
-        var html = `<div class="inst_text"><span>（場面${Math.floor(Counter/3)+1}の続き）<br/>このメッセージに対し，<font color="red"><b>あなた</b></font>は次のそれぞれの感情をどの程度感じると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/><div>'<img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>`;
+        var html = `<div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/><div class="inst_text"><span>（場面${Counter+1}の続き）<br/>このメッセージに対し，<font color="red"><b>あなた</b></font>は次のそれぞれの感情をどの程度感じると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/>`;
         return html;
       },
       questions: [
@@ -229,30 +287,41 @@ var sad_hyoka = {
         { prompt: "不快な", labels: scale, required: true},
       ],
       data: {imgID: jsPsych.timelineVariable('message')},
+      on_finish: function(){
+        item_data_self = jsPsych.data.get().last().values()[0].response;
+      }
     },
     {
       type: 'survey-likert',
       preamble: function(){
-        var html = `<div class="inst_text"><span>（場面${Math.floor(Counter/3)+1}の続き）<br/>このメッセージの<font color="blue"><b>送り主</b></font>は，次のそれぞれの感情をどの程度感じていると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/><div>'<img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>`;
+        var html = `<div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/><div class="inst_text"><span>（場面${Counter+1}の続き）<br/>このメッセージの<font color="blue"><b>送り主</b></font>は次のそれぞれの感情をどの程度感じていると思いますか。「0：まったく感じていない」から「4：強く感じている」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/>`;
         return html;
       },
       questions: [
-        { prompt: "満足な", labels: scale, required: true},
-        { prompt: "悲しい", labels: scale, required: true},
-        { prompt: "腹が立つ", labels: scale, required: true},
-        { prompt: "嬉しい", labels: scale, required: true},
-        { prompt: "気分が良い", labels: scale, required: true},
-        { prompt: "不快な", labels: scale, required: true},
+        { prompt: "満足な", labels: scale2, required: true},
+        { prompt: "悲しい", labels: scale2, required: true},
+        { prompt: "腹が立つ", labels: scale2, required: true},
+        { prompt: "嬉しい", labels: scale2, required: true},
+        { prompt: "気分が良い", labels: scale2, required: true},
+        { prompt: "不快な", labels: scale2, required: true},
       ],
       data: {imgID: jsPsych.timelineVariable('message')},
+      on_finish: function(){
+        Counter += 1 ;
+        item_data_other = jsPsych.data.get().last().values()[0].response;
+        jsPsych.data.write({valence: valence, arousal: arousal, 
+          content_jibun: item_data_self['Q0'], sad_jibun: item_data_self['Q1'], 
+          anger_jibun: item_data_self['Q2'], happy_jibun: item_data_self['Q3'], 
+          pleasant_jibun: item_data_self['Q4'], unpleasant_jibun: item_data_self['Q5'],
+          content_aite: item_data_other['Q0'], sad_aite: item_data_other['Q1'], 
+          anger_aite: item_data_other['Q2'], happy_aite: item_data_other['Q3'], 
+          pleasant_aite: item_data_other['Q4'], unpleasant_aite: item_data_other['Q5'], save: 1});
+      }
     },
   ],
   button_label: '次へ',
-  timeline_variables: jsPsych.randomization.sampleWithReplacement(sad_emoji, 1)[0],
+  timeline_variables: sad_emoji[message_id],
   randomize_order: true,
-  on_finish: function () { 
-    Counter += 1 ;
-  },
 }
 
 var anger_hyoka = {
@@ -260,16 +329,23 @@ var anger_hyoka = {
     {
       type: 'survey-html-form',
       preamble: function(){
-        var html = `<div class="inst_text"><span><b>場面${Math.floor(Counter/3)+1}</b><br/><br/>〜として，次のメッセージが送られてきた場面を想定してください。<br /><br />このとき，<font color="red"><b>あなた</b></font>が感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br/><div>'<img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>`;
+        var html = `<div class="inst_text"><span><b>場面${Counter+1}</b><br/><br/>〜として，次のメッセージが送られてきた場面を想定してください。<br /><br/><div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>このとき，<font color="red"><b>あなた</b></font>が感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br />`;
         return html;
       },
       html: affect_grid1,
       data: {imgID: jsPsych.timelineVariable('message')},
+      on_finish: function(){
+        var ag_res = jsPsych.data.get().last().values()[0].response;
+        ag_res = ag_res['ag1'];
+        ag_res = ag_res.split(',');
+        valence = ag_res[0]; 
+        arousal = ag_res[1];
+      }
     },
     {
       type: 'survey-likert',
       preamble: function(){
-        var html = `<div class="inst_text"><span>（場面${Math.floor(Counter/3)+1}の続き）<br/>このメッセージに対し，<font color="red"><b>あなた</b></font>は次のそれぞれの感情をどの程度感じると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/><div>'<img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>`;
+        var html = `<div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/><div class="inst_text"><span>（場面${Counter+1}の続き）<br/>このメッセージに対し，<font color="red"><b>あなた</b></font>は次のそれぞれの感情をどの程度感じると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/>`;
         return html;
       },
       questions: [
@@ -281,30 +357,41 @@ var anger_hyoka = {
         { prompt: "不快な", labels: scale, required: true},
       ],
       data: {imgID: jsPsych.timelineVariable('message')},
+      on_finish: function(){
+        item_data_self = jsPsych.data.get().last().values()[0].response;
+      }
     },
     {
       type: 'survey-likert',
       preamble: function(){
-        var html = `<div class="inst_text"><span>（場面${Math.floor(Counter/3)+1}の続き）<br/>このメッセージの<font color="blue"><b>送り主</b></font>は，次のそれぞれの感情をどの程度感じていると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/><div>'<img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>`;
+        var html = `<div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/><div class="inst_text"><span>（場面${Math.floor(Counter/3)+1}の続き）<br/>このメッセージの<font color="blue"><b>送り主</b></font>は次のそれぞれの感情をどの程度感じていると思いますか。「0：まったく感じていない」から「4：強く感じている」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/>`;
         return html;
       },
       questions: [
-        { prompt: "満足な", labels: scale, required: true},
-        { prompt: "悲しい", labels: scale, required: true},
-        { prompt: "腹が立つ", labels: scale, required: true},
-        { prompt: "嬉しい", labels: scale, required: true},
-        { prompt: "気分が良い", labels: scale, required: true},
-        { prompt: "不快な", labels: scale, required: true},
+        { prompt: "満足な", labels: scale2, required: true},
+        { prompt: "悲しい", labels: scale2, required: true},
+        { prompt: "腹が立つ", labels: scale2, required: true},
+        { prompt: "嬉しい", labels: scale2, required: true},
+        { prompt: "気分が良い", labels: scale2, required: true},
+        { prompt: "不快な", labels: scale2, required: true},
       ],
       data: {imgID: jsPsych.timelineVariable('message')},
+      on_finish: function(){
+        Counter += 1 ;
+        item_data_other = jsPsych.data.get().last().values()[0].response;
+        jsPsych.data.write({valence: valence, arousal: arousal, 
+          content_jibun: item_data_self['Q0'], sad_jibun: item_data_self['Q1'], 
+          anger_jibun: item_data_self['Q2'], happy_jibun: item_data_self['Q3'], 
+          pleasant_jibun: item_data_self['Q4'], unpleasant_jibun: item_data_self['Q5'],
+          content_aite: item_data_other['Q0'], sad_aite: item_data_other['Q1'], 
+          anger_aite: item_data_other['Q2'], happy_aite: item_data_other['Q3'], 
+          pleasant_aite: item_data_other['Q4'], unpleasant_aite: item_data_other['Q5'], save: 1});
+      }
     },
   ],
   button_label: '次へ',
-  timeline_variables: jsPsych.randomization.sampleWithReplacement(anger_emoji, 1)[0],
+  timeline_variables: anger_emoji[message_id],
   randomize_order: true,
-  on_finish: function () { 
-    Counter += 1 ;
-  },
 }
 
 var joy_hyoka = {
@@ -312,16 +399,23 @@ var joy_hyoka = {
     {
       type: 'survey-html-form',
       preamble: function(){
-        var html = `<div class="inst_text"><span><b>場面${Math.floor(Counter/3)+1}</b><br/><br/>〜として，次のメッセージが送られてきた場面を想定してください。<br /><br />このとき，<font color="red"><b>あなた</b></font>が感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br/><div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>`;
+        var html = `<div class="inst_text"><span><b>場面${Counter+1}</b><br/><br/>〜として，次のメッセージが送られてきた場面を想定してください。<br /><br/><div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>このとき，<font color="red"><b>あなた</b></font>が感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br />`;
         return html;
       },
       html: affect_grid1,
       data: {imgID: jsPsych.timelineVariable('message')},
+      on_finish: function(){
+        var ag_res = jsPsych.data.get().last().values()[0].response;
+        ag_res = ag_res['ag1'];
+        ag_res = ag_res.split(',');
+        valence = ag_res[0]; 
+        arousal = ag_res[1];
+      }
     },
     {
       type: 'survey-likert',
       preamble: function(){
-        var html = `<div class="inst_text"><span>（場面${Math.floor(Counter/3)+1}の続き）<br/>このメッセージに対し，<font color="red"><b>あなた</b></font>は次のそれぞれの感情をどの程度感じると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/><div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>`;
+        var html = `<div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/><div class="inst_text"><span>（場面${Counter+1}の続き）<br/>このメッセージに対し，<font color="red"><b>あなた</b></font>は次のそれぞれの感情をどの程度感じると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/>`;
         return html;
       },
       questions: [
@@ -333,35 +427,55 @@ var joy_hyoka = {
         { prompt: "不快な", labels: scale, required: true},
       ],
       data: {imgID: jsPsych.timelineVariable('message')},
+      on_finish: function(){
+        item_data_self = jsPsych.data.get().last().values()[0].response;
+      }
     },
     {
       type: 'survey-likert',
       preamble: function(){
-        var html = `<div class="inst_text"><span>（場面${Math.floor(Counter/3)+1}の続き）<br/>このメッセージの<font color="blue"><b>送り主</b></font>は，次のそれぞれの感情をどの程度感じていると思いますか。「0：まったく感じない」から「4：強く感じる」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/><div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>`;
+        var html = `<div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/><div class="inst_text"><span>（場面${Counter+1}の続き）<br/>このメッセージの<font color="blue"><b>送り主</b></font>は次のそれぞれの感情をどの程度感じていると思いますか。「0：まったく感じていない」から「4：強く感じている」までの数字のうち，もっとも近いものを1つずつ選んでください。</span></div><br/>`;
         return html;
       },
       questions: [
-        { prompt: "満足な", labels: scale, required: true},
-        { prompt: "悲しい", labels: scale, required: true},
-        { prompt: "腹が立つ", labels: scale, required: true},
-        { prompt: "嬉しい", labels: scale, required: true},
-        { prompt: "気分が良い", labels: scale, required: true},
-        { prompt: "不快な", labels: scale, required: true},
+        { prompt: "満足な", labels: scale2, required: true},
+        { prompt: "悲しい", labels: scale2, required: true},
+        { prompt: "腹が立つ", labels: scale2, required: true},
+        { prompt: "嬉しい", labels: scale2, required: true},
+        { prompt: "気分が良い", labels: scale2, required: true},
+        { prompt: "不快な", labels: scale2, required: true},
       ],
       data: {imgID: jsPsych.timelineVariable('message')},
+      on_finish: function(){
+        item_data_other = jsPsych.data.get().last().values()[0].response;
+        Counter += 1 ;
+        jsPsych.data.write({valence: valence, arousal: arousal, 
+          content_jibun: item_data_self['Q0'], sad_jibun: item_data_self['Q1'], 
+          anger_jibun: item_data_self['Q2'], happy_jibun: item_data_self['Q3'], 
+          pleasant_jibun: item_data_self['Q4'], unpleasant_jibun: item_data_self['Q5'],
+          content_aite: item_data_other['Q0'], sad_aite: item_data_other['Q1'], 
+          anger_aite: item_data_other['Q2'], happy_aite: item_data_other['Q3'], 
+          pleasant_aite: item_data_other['Q4'], unpleasant_aite: item_data_other['Q5'], save: 1});
+    }
     },
   ],
   button_label: '次へ',
-  timeline_variables: jsPsych.randomization.sampleWithReplacement(joy_emoji, 1)[0],
+  timeline_variables: joy_emoji[message_id],
   randomize_order: true,
-  on_finish: function () { 
-    Counter += 1 ;
-  },
 }
 
-var Hyouka = {
-  timeline: jsPsych.randomization.sampleWithoutReplacement([sad_hyoka, anger_hyoka, joy_hyoka], 1),
-};
+
+var save = {
+  type: 'call-function',
+  func: function(){
+    jsPsych.data.addProperties(par_info);
+    jsPsych.data.addProperties(face_data);
+//    var data_record = jsPsych.data.get().filter({save: 1}).values();
+    write_data(jsPsych.data.get().filter({save: 1}));
+    record_cond();
+  }
+}
+
 
 var oshimai = {
   type: 'instructions',
@@ -372,30 +486,89 @@ var oshimai = {
     button_label_next:'終了',
     show_clickable_nav: false,
     on_load: function(data) {
-        jsPsych.data.addProperties(par_info);
-        jsPsych.data.displayData('csv');
-        //saveData("filename.csv", jsPsych.data.dataAsCSV()) ;
+//        jsPsych.data.displayData('csv');
       }
   };
 
-timeline.push(nenrei, seibetsu, hajimeni, shitashisa, emoji1, emoji2, AGsetsumei, KadaiSetsumei, Hyouka, oshimai)
+var kanjo = [sad_hyoka, anger_hyoka, joy_hyoka];
+var Hyoka = {
+  timeline: kanjo[0],
+}
+
+timeline.push(nenrei, seibetsu, hajimeni, shitashisa, emoji1, emoji2, AGsetsumei, KadaiSetsumei)
+
+switch (emotion_id){
+  case 1: 
+    timeline.push(sad_hyoka, save, oshimai)
+    break;
+  case 2: 
+    timeline.push(anger_hyoka, save, oshimai)
+    break;
+  default:
+    timeline.push(joy_hyoka, save, oshimai)
+}
+
+//joy_hyoka, save, oshimai)
 
 //timeline.push(joy_hyoka, oshimai)
 
+//timeline.push(nenrei, seibetsu, hajimeni, shitashisa, emoji1, emoji2)
+
+//timeline.push(face_item,AGsetsumei, KadaiSetsumei,test_hyoka,save,oshimai)
 
 jsPsych.init({
-    timeline: timeline,
+    timeline: timeline, 
   });
 
 
+function write_data(data){
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', 'write_data.php'); // change 'write_data.php' to point to php script.
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onload = function() {
+    if(xhr.status == 200){
+      var response = JSON.parse(xhr.responseText);
+      console.log(response.success);
+    }
+  };
+  xhr.send(data.json());
+}
 
-function saveData(filename, filedata){
-  $.ajax({
-    type:'post',
-    cache: false,
-    url: 'record_data.php', // this is the path to the above PHP script
-    data: {filename: filename, filedata: filedata}
-  });
+function record_cond(){
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', 'record_cond.php'); // change 'write_data.php' to point to php script.
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onload = function() {
+    if(xhr.status == 200){
+      var response = JSON.parse(xhr.responseText);
+      console.log('hogehoge');
+    }
+  };
+  xhr.send(JSON.stringify({parID: subject_id, cond: min_id}));
+}
+
+
+function count_cond(){
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', 'assign_cond.php',false); // change 'write_data.php' to point to php script.
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onload = function() {
+    if(xhr.status == 200){
+      var response = xhr.responseText;
+      var cdata = JSON.parse(response);
+
+      cdata.forEach ( // 取得したデータをもとに各条件の度数を設定
+        function(element){
+          var c_id = parseInt(element['cond']);
+          var c_ct = parseInt(element['count']);
+          cond_ids[c_id] = c_ct;
+        }
+      );
+    }
+  };
+  xhr.send();
+  xhr.addEventListener("load", function(){ 
+  }, false);
 }
   </script>
 </html>

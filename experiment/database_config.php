@@ -4,5 +4,5 @@
   $username = "sbtseiji_admin";
   $password = "3QhHWZctQ";
   $dbname = "sbtseiji_2022";
-  $table = "ohata";
+  $table = "table_data";
 ?>
