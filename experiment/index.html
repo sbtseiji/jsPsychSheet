@@ -234,7 +234,7 @@
   var AGsetsumei = {
     type: 'instructions',
     pages: [
-      `<div class="inst_text"><span>これから〜（ここにアフェクト・グリッドの説明）。</span></div>`,
+      `<div class="inst_text"><span>この後の課題では，「アフェクト・グリッド」を用いて感情を表現してもらいます。<br/>アフェクト・グリッドは下の図のように正方形になっており，これは感情の地図のようなものです。正方形の中心はボジティブな感情でもネガティブな感情でもない 中立的な感情を表します。<br/><br/>図の縦方向は，覚醒の度合いを表しています。覚醒とは，その人がどれだけ目が覚めているか，警戒しているか，活動的であるかのことで，その感情がプラスかマイナスかとは無関係です。グリッドの右半分は，快さを表します。右に行くほど快さが強くなります。左半分は不快な感情を表します。左に行くほど，より不快です。 <br/><br/>他の領域では右上は興奮，右下はリラックスの感情です。その反対側，左上は緊張，左下は落ち込みの感情があります。<br/><br/> 例: 例えば，あなたが文章を読んで，不快感と軽い落ち込みを感じたとします。この場合，以下の部分を選択します。</span></div>`,
     ],
     allow_backward: false,
     button_label_next:'次へ',
@@ -259,7 +259,7 @@ var sad_hyoka = {
     {
       type: 'survey-html-form',
       preamble: function(){
-        var html = `<div class="inst_text"><span><b>場面${Counter+1}</b><br/><br/>〜として，次のメッセージが送られてきた場面を想定してください。<br /><br/><div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>このとき，<font color="red"><b>あなた</b></font>が感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br />`;
+        var html = `<div class="inst_text"><span><b>場面${Counter+1}</b><br/><br/>メッセージ（LINEなど）でよくやり取りする相手から，次のメッセージが送られてきた場面を想定してください。<br /><br/><div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>このとき，<font color="red"><b>あなた</b></font>が感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br />`;
         return html;
       },
       html: affect_grid1,
@@ -329,7 +329,7 @@ var anger_hyoka = {
     {
       type: 'survey-html-form',
       preamble: function(){
-        var html = `<div class="inst_text"><span><b>場面${Counter+1}</b><br/><br/>〜として，次のメッセージが送られてきた場面を想定してください。<br /><br/><div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>このとき，<font color="red"><b>あなた</b></font>が感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br />`;
+        var html = `<div class="inst_text"><span><b>場面${Counter+1}</b><br/><br/>メッセージ（LINEなど）でよくやり取りする相手から，次のメッセージが送られてきた場面を想定してください。<br /><br/><div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>このとき，<font color="red"><b>あなた</b></font>が感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br />`;
         return html;
       },
       html: affect_grid1,
@@ -399,7 +399,7 @@ var joy_hyoka = {
     {
       type: 'survey-html-form',
       preamble: function(){
-        var html = `<div class="inst_text"><span><b>場面${Counter+1}</b><br/><br/>〜として，次のメッセージが送られてきた場面を想定してください。<br /><br/><div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>このとき，<font color="red"><b>あなた</b></font>が感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br />`;
+        var html = `<div class="inst_text"><span><b>場面${Counter+1}</b><br/><br/>メッセージ（LINEなど）でよくやり取りする相手から，次のメッセージが送られてきた場面を想定してください。<br /><br/><div><img src="imgs/${jsPsych.timelineVariable('message')}.png" class = "emoji_stim"></div><br/>このとき，<font color="red"><b>あなた</b></font>が感じると考えられる感情の位置を，アフェクト・グリッド上で示してください。</span></div><br />`;
         return html;
       },
       html: affect_grid1,
@@ -495,7 +495,7 @@ var Hyoka = {
   timeline: kanjo[0],
 }
 
-timeline.push(nenrei, seibetsu, hajimeni, shitashisa, emoji1, emoji2, AGsetsumei, KadaiSetsumei)
+timeline.push(hajimeni)
 
 switch (emotion_id){
   case 1: 
@@ -512,7 +512,7 @@ switch (emotion_id){
 
 //timeline.push(joy_hyoka, oshimai)
 
-//timeline.push(nenrei, seibetsu, hajimeni, shitashisa, emoji1, emoji2)
+//timeline.push(hajimeni, nenrei, seibetsu, shitashisa, emoji1, emoji2)
 
 //timeline.push(face_item,AGsetsumei, KadaiSetsumei,test_hyoka,save,oshimai)
 
